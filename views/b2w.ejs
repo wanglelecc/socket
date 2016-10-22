@@ -3,16 +3,90 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <p>当前token: <%= accessToken %></p>
+
+    <a href="javascript:sendData();">开始发送数据</a>
     <script type="text/javascript" src="/javascripts/socket.io-1.4.5.js"></script>
     <script type="text/javascript">
-      var socket = io.connect('ws://localhost:3001');
+      var uuid = '<%= accessToken %>';
+      var socket = io.connect('ws://localhost:3001/b2w');
+
+      socket.on('connect',function(){
+        login(socket);
+        console.log("连接服务器成功");
+      });
+
+      socket.on('disconnect', function() {
+        console.log("与服务其断开");
+      });
+
+      socket.on('reconnect',function(Object){
+        console.log("重新连接到服务器");
+      });
+
+      socket.on('connect_failed',function(Object){
+        console.log("连接失败");
+      });
+
+      socket.on('reconnecting',function(Object){
+        console.log("正在重连");
+      });
+
       socket.on('message',function(data){
           console.log(data);
       });
+
+      // 监听系统消息
+      socket.on('system',function(data){
+          alert(data.message);
+      });
+
+      /**
+       * 登录(加入会话队列)
+       * @param socket
+       */
+      function login(socket){
+        socket.emit('login',{uuid:uuid});
+      }
+
+//      socket.on('connection',function(data){
+//        console.log(data);
+//        alert(data.body);
+//      });
+
+      function sendData(){
+         setTimeout(function(){
+//           console.log(getData());
+
+           // 上传数据
+           socket.emit('upload',getData());
+
+           sendData();
+         },1000);
+      }
+
+      function getData(){
+        return {
+          sn : randomInt(1000000,9999999),
+          data : generateRandomAlphaNum(36)
+        };
+      }
+
+      // 生成随机数
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+      }
+
+      // 生成随机字符串
+      function generateRandomAlphaNum(len) {
+        var rdmString = "";
+        for (; rdmString.length < len; rdmString += Math.random().toString(36).substr(2));
+        return rdmString.substr(0, len);
+      }
     </script>
   </body>
 </html>

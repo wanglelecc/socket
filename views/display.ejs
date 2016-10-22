@@ -7,5 +7,50 @@
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <ul id="data">
+    </ul>
+    <script type="text/javascript" src="/javascripts/socket.io-1.4.5.js"></script>
+    <script type="text/javascript">
+      var uuid = '<%= accessToken %>';
+      var socket = io.connect('ws://localhost:3001/display');
+
+      socket.on('connect',function(){
+//        login(socket);
+        console.log("连接服务器成功");
+      });
+
+      socket.on('disconnect', function() {
+        console.log("与服务其断开");
+      });
+
+      socket.on('reconnect',function(Object){
+        console.log("重新连接到服务器");
+      });
+
+      socket.on('connect_failed',function(Object){
+        console.log("连接失败");
+      });
+
+      socket.on('reconnecting',function(Object){
+        console.log("正在重连");
+      });
+
+      socket.on('message',function(data){
+        console.log(data);
+      });
+
+      // 监听接收数据
+      socket.on('push',function(data){
+        var message = 'sn:'+data.sn+' data:'+data.data;
+        var para=document.createElement("li");
+        var node=document.createTextNode(message);
+        para.appendChild(node);
+
+        document.querySelector("#data").appendChild(para);
+        console.log(message);
+      });
+
+
+    </script>
   </body>
 </html>
