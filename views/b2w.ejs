@@ -3,11 +3,15 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/1.6.4/jquery.min.js"></script>
   </head>
   <body>
     <h1><%= title %></h1>
     <p>当前token: <%= accessToken %></p>
+
+    <div>
+      <input type="text" id="username" value="" placeholder="请输入用户名" /><input id="login" type="button" value="登录到服务器"  />
+    </div>
 
     <a href="javascript:sendData();">开始发送数据</a>
     <script type="text/javascript" src="/javascripts/socket.io-1.4.5.js"></script>
@@ -16,7 +20,7 @@
       var socket = io.connect('ws://localhost:3001/b2w');
 
       socket.on('connect',function(){
-        login(socket);
+        //login(socket);
         console.log("连接服务器成功");
       });
 
@@ -45,13 +49,21 @@
           alert(data.message);
       });
 
+      $("#login").click(function(){
+        var username = $("#username").val();
+        if(!username){ alert('请输入用户名!'); return false;}
+
+        socket.emit('login',{uuid:uuid,username:username});
+        console.log('登录服务器成功.');
+      });
+
       /**
        * 登录(加入会话队列)
        * @param socket
        */
-      function login(socket){
-        socket.emit('login',{uuid:uuid});
-      }
+//      function login(socket){
+//        //socket.emit('login',{uuid:uuid});
+//      }
 
 //      socket.on('connection',function(data){
 //        console.log(data);

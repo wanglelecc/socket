@@ -3,10 +3,15 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/1.6.4/jquery.min.js"></script>
   </head>
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <div>
+        <input type="text" id="username" value="" placeholder="请输入用户名" /><input id="login" type="button" value="登录到服务器"  />
+    </div>
+
     <ul id="data">
     </ul>
     <script type="text/javascript" src="/javascripts/socket.io-1.4.5.js"></script>
@@ -49,6 +54,15 @@
         document.querySelector("#data").appendChild(para);
         console.log(message);
       });
+
+      $("#login").click(function(){
+          var username = $("#username").val();
+          if(!username){ alert('请输入用户名!'); return false;}
+
+          socket.emit('login',{uuid:uuid,username:username});
+          console.log('登录服务器成功.');
+      });
+
 
 
     </script>
